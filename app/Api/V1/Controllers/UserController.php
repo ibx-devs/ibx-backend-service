@@ -5,11 +5,11 @@ namespace App\Api\V1\Controllers;
 
 
 use App\Api\V1\Models\User;
-use App\Http\Controllers\Api\V1\SMSGatewayController;
 use Ixudra\Curl\Facades\Curl;
 use App\Contracts\Repository\IUserRepository;
 use App\Helper\UserScope;
 use App\Plugins\PUGXShortId\Shortid;
+use App\Utils\UserMapper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -31,14 +31,18 @@ class UserController extends BaseController
     public function findAll()
     {
         $result = $this->userRepo->findAll();
-        return $result;
+        $prunedResult = UserMapper::prune($result);
+        $response_message = $this->customHttpResponse(200, 'Success.', $prunedResult);
+        return response()->json($response_message);
     }
 
 
     public function find($id)
     {
         $result = $this->userRepo->find($id);
-        return $result;
+        $prunedResult = UserMapper::prune($result);
+        $response_message = $this->customHttpResponse(200, 'Success.', $prunedResult);
+        return response()->json($response_message);
     }
 
     public function logout(Request $request)
@@ -54,6 +58,7 @@ class UserController extends BaseController
 
     public function login(Request $request)
     {
+
         $validator = Validator::make(
             $request->input(),
             [
@@ -74,12 +79,12 @@ class UserController extends BaseController
         $passwordPlain = $request->get('password');
 
         $user = $this->userRepo->showByUsername($username);
-        Log::info("aa3" . json_encode($user));
+
         if (count($user) > 0) {
             $user = $user->first();
 
-            Log::info("aa");
-            Log::info(json_encode($user));
+            // Log::info($passwordPlain);
+            // Log::info(json_encode($user));
             if (Hash::check($passwordPlain, $user->password)) {
                 $userID = $user->id;
                 $username = $user->username;
@@ -105,15 +110,15 @@ class UserController extends BaseController
                     $response_message = $this->customHttpResponse(200, 'Login successful. Token generated.', $result);
                     return response()->json($response_message);
                 } catch (Exception $th) {
-                    Log::info("aa");
-                    Log::info($th->getMessage());
+
+                    // Log::info("aa");
+                    // Log::info($th->getMessage());
+
                     //send nicer data to the user
                     $response_message = $this->customHttpResponse(401, 'aClient authentication failed.');
                     return response()->json($response_message);
                 }
             } else {
-                Log::info("aa");
-
                 //send nicer error to the user
                 $response_message = $this->customHttpResponse(401, 'User does not Exist.');
                 return response()->json($response_message);
@@ -126,21 +131,6 @@ class UserController extends BaseController
         }
     }
 
-
-
-    public function showAll()
-    {
-        $result = $this->userRepo->showAll();
-        return $result;
-    }
-
-
-    public function show($userId)
-    {
-        // Log::info($userId);
-        $result = $this->userRepo->show($userId);
-        return $result;
-    }
 
     public function register(Request $request)
     {
@@ -158,9 +148,6 @@ class UserController extends BaseController
 
         if ($validator->fails()) {
 
-            //Log neccessary status detail(s) for debugging purpose.
-            // Log::info("logging error" . json_encode($validator->errors()) );
-
             //send nicer error to the user
             $response_message = $this->customHttpResponse(401, 'Incorrect Details. All fields are required.');
             return response()->json($response_message);
@@ -173,10 +160,8 @@ class UserController extends BaseController
             $detail = $request->input();
             $user = $request->user('api');
 
-            $detail['business_id'] = $user->business_id; //where 8 = player
-            $password = Shortid::generate(10, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@&");
-
-            Log::info("logging passport {$password}");
+            // $password = Shortid::generate(10, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@&");
+            $password = $detail['password'];
             $detail['password'] = Hash::make($password);
             $detail['plain_password'] = $password;
 

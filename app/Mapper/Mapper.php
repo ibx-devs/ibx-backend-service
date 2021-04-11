@@ -16,7 +16,7 @@ class Mapper
 
 
 
-    public static function toUserDBAuth($data)
+    public static function toUserDB($data)
     {
         $data = (object) $data;
 
@@ -24,24 +24,14 @@ class Mapper
             'username' => $data->username,
             'password' => $data->password,
             'role' => (int) $data->role,
-            'business_id' => SELF::propExist($data, 'business_id'),
-        ];
-    }
-
-    public static function toUserDBProfile($data)
-    {
-        $data = (object) $data;
-
-        return [
-            'id' => SELF::propExist($data, 'id'),
             'firstname' => SELF::propExist($data, 'firstname'),
             'surname' => SELF::propExist($data, 'surname'),
             'email' => SELF::propExist($data, 'email'),
             'phone' => SELF::propExist($data, 'phone'),
-            'business_id' => SELF::propExist($data, 'business_id'),
         ];
     }
 
+    
     public static function toBusinessDB($data)
     {
         $data = (object) $data;

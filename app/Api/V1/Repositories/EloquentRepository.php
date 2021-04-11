@@ -2,10 +2,13 @@
 
 namespace App\Api\V1\Repositories;
 
+use App\Api\V1\Models\User;
 use App\Api\V1\Traits\HttpStatusResponse;
 use App\Contracts\IRepository;
+use App\Utils\BaseMapper;
 use Dingo\Api\Routing\Helpers;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 
 
@@ -37,15 +40,19 @@ abstract class EloquentRepository implements IRepository
     }
 
     /** {@inheritdoc}*/
-    public function find(string $id): Collection
+    public function find(string $id): User
     {
-        return $this->model->where('id', '=', $id)->get();
+        $data =  $this->model->where('uuid', '=', $id)->first();
+        $prunedData = BaseMapper::prune($data);
+        return $prunedData;
     }
 
     /** {@inheritdoc}*/
     public function findAll(): Collection
     {
-        return $this->model->all();
+        $data =  $this->model->all();
+        $prunedData = BaseMapper::prune($data);
+        return $prunedData;
     }
 
     /** {@inheritdoc}*/

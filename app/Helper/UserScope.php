@@ -13,27 +13,8 @@ class UserScope
     {
         //$role comes from the user_role db. Refere for the values used here.
         switch ($role) {
-            case 'cashier':
-                $res = ['cashier'];
-                break;
-            case 'operator':
-                $res = ['operator'];
-                break;
-
-            case 'pit_boss':
-                $res = ['pit_boss'];
-                break;
-
-            case 'dealer':
-                $res = ['dealer'];
-                break;
-
-            case 'manager':
-                $res = ['manager'];
-                break;
-
-            case 'player':
-                $res = ['player'];
+            case 'user':
+                $res = ['user'];
                 break;
 
             case 'super_admin':
@@ -45,7 +26,7 @@ class UserScope
                 break;
 
             default:
-                $res = ['player'];
+                $res = ['user'];
                 break;
         }
 

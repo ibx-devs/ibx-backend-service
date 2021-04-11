@@ -18,10 +18,6 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
-        // app('Dingo\Api\Auth\Auth')->extend('basic', function ($app) {
-        //     return new Basic($app['auth'], 'email');
-        // });
     }
 
     /**
@@ -36,26 +32,12 @@ class AuthServiceProvider extends ServiceProvider
         // should return either a User instance or null. You're free to obtain
         // the User instance via an API token or any other method necessary.
 
-        // $this->app['auth']->viaRequest('api', function ($request) {
-        //     if ($request->input('api_token')) {
-        //         return User::where('api_token', $request->input('api_token'))->first();
-        //     }
-        // });
 
-
-
-        // Passport::personalAccessClientId(env("PASSPORT_PERSONAL_ACCESS_CLIENT_ID", "36"));
-
-        // Passport::personalAccessClientSecret(env("PASSPORT_PERSONAL_ACCESS_CLIENT_SECRET", "uM0zTjimhfYt6fwCfxCGFwgFTTFURwhBNgalOQ5lu"));
-        // // LumenPassport::routes($this->app,['prefix'=>'api']);
         Passport::tokensCan([
-            'admin' => "The super admin",
-            'cashier' => "Cashier's only  scope",
-            'player' => "player's/Patrons only  scope",
-            'pit_boss' => "",
-            'super_admin' => "",
-            'manager' => "",
-            'operator' => "",
+            'user' => "user's only  scope",
+            'admin' => "The admin with lesser privilege",
+            'super_admin' => "The super admin",
+
         ]);
 
         LumenPassport::routes($this->app);

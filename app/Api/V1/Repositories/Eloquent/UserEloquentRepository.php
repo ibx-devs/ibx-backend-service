@@ -3,8 +3,7 @@
 namespace App\Api\V1\Repositories\Eloquent;
 
 use App\Api\V1\Models\oAuthClient;
-use App\Api\V1\Models\UserAuth;
-use App\Api\V1\Models\UserProfile;
+use App\Api\V1\Models\User;
 use App\Contracts\Repository\IUserRepository;
 use App\Api\V1\Repositories\EloquentRepository;
 use App\Utils\Mapper;
@@ -14,23 +13,21 @@ use Illuminate\Support\Facades\Log;
 class UserEloquentRepository extends  EloquentRepository implements IUserRepository
 {
     public $user;
-    public function __construct(UserAuth $user, UserProfile $userProfile)
+    public function __construct(User $user)
     {
         parent::__construct();
         $this->user =  $user;
-        $this->userProfile =  $userProfile;
     }
 
     public function model()
     {
-        return UserProfile::class;
+        return User::class;
     }
 
     public function showByUsername(string $username)
     {
-        $res = $this->user->from('user_auth as a')
-            ->select('a.id', 'a.username', 'a.password', 'b.surname', 'b.firstname', 'b.phone', 'b.email', 'b.avatar', 'c.stub as role')
-            ->leftJoin('user_profile as b', 'a.id', 'b.id')
+        $res = $this->user->from('user as a')
+            ->select('a.id', 'a.username', 'a.password', 'a.surname', 'a.firstname', 'a.phone', 'a.email', 'a.avatar', 'c.stub as role')
             ->leftJoin('user_role as c', 'a.role', 'c.id')
             ->where("a.username", '=', $username)
             ->get();
@@ -46,14 +43,10 @@ class UserEloquentRepository extends  EloquentRepository implements IUserReposit
             DB::beginTransaction();
             $plainPassword = $details['plain_password'];
 
-            $dbDataAuth = Mapper::toUserDBAuth($details);
+            $dbDataAuth = Mapper::toUserDB($details);
             $auth = $this->user->create($dbDataAuth);
 
-            $details['id'] = $auth->id;
-
-            $dbDataProfile = Mapper::toUserDBProfile($details);
-            $auth2 = $this->userProfile->create($dbDataProfile);
-
+           
 
             $oauth_client = new oAuthClient();
             $oauth_client->user_id = $auth->id;
@@ -94,7 +87,7 @@ class UserEloquentRepository extends  EloquentRepository implements IUserReposit
         $email = $details['email'];
 
         $res =  DB::select(DB::raw(
-            "SELECT a.* FROM user_profile a
+            "SELECT a.* FROM user a
             WHERE (a.firstname = '{$firstname}' and a.surname = '{$lastname}' OR
                   a.firstname ='{$lastname}' and a.surname = '{$firstname}') AND
                   a.email = '{$email}'   
@@ -109,7 +102,7 @@ class UserEloquentRepository extends  EloquentRepository implements IUserReposit
         $username = $details['username'];
 
         $res =  DB::select(DB::raw(
-            "SELECT a.* FROM user_auth a
+            "SELECT a.* FROM user a
             WHERE a.username = '{$username}'   
          "
         ));
@@ -122,7 +115,7 @@ class UserEloquentRepository extends  EloquentRepository implements IUserReposit
         $email = $details['email'];
 
         $res =  DB::select(DB::raw(
-            "SELECT a.* FROM user_profile a
+            "SELECT a.* FROM user a
             WHERE a.email = '{$email}'   
          "
         ));

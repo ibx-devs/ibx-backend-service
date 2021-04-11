@@ -3,11 +3,10 @@
 namespace App\Api\V1\Controllers;
 
 use Dingo\Api\Routing\Helpers;
-use App\Http\Controllers\Controller;
 use Dingo\Api\Exception\ValidationHttpException;
 use App\Api\V1\Traits\HttpStatusResponse;
 
-class BaseController extends Controller
+class BaseController
 {
     // Interface help call
     use Helpers, HttpStatusResponse;
