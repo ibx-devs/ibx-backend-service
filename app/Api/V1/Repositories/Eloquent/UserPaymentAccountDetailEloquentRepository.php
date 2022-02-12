@@ -21,10 +21,11 @@ class UserPaymentAccountDetailEloquentRepository extends  EloquentRepository imp
         return UserPaymentAccountDetail::class;
     }
 
-    public function getIDsByUUID($uuid)
+    public function getIDsByUUID($uuid, $userID)
     {
         $res = $this->UPAD->select('id', 'payment_method_id')
             ->where('uuid', '=', $uuid)
+            ->where('user_id', '=', $userID)
             ->first();
         return $res;
     }

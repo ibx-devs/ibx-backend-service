@@ -8,6 +8,7 @@ use App\Api\V1\Repositories\Eloquent\AdsCounterpartyConditionsEloquentRepository
 use App\Api\V1\Repositories\Eloquent\AdsEloquentRepository;
 use App\Api\V1\Repositories\Eloquent\AdsPaymentMethodEloquentRepository;
 use App\Api\V1\Repositories\Eloquent\AdsPaymentTimeLimitEloquentRepository;
+use App\Api\V1\Repositories\Eloquent\AdsVisitEloquentRepository;
 use App\Api\V1\Repositories\Eloquent\EscrowEloquentRepository;
 use App\Api\V1\Repositories\Eloquent\EscrowReleaseEloquentRepository;
 use App\Api\V1\Repositories\Eloquent\OrderCancelledEloquentRepository;
@@ -16,6 +17,7 @@ use App\Api\V1\Repositories\Eloquent\OrdersEloquentRepository;
 use App\Api\V1\Repositories\Eloquent\PaymentMethodsEloquentRepository;
 use App\Contracts\Repository\IUserRepository;
 use App\Api\V1\Repositories\Eloquent\SysActivityTypesEloquentRepository;
+use App\Api\V1\Repositories\Eloquent\SysBlockchainNetworksEloquentRepository;
 use App\Api\V1\Repositories\Eloquent\SysCurrencyEloquentRepository;
 use App\Api\V1\Repositories\Eloquent\SysCurrencyTypesEloquentRepository;
 use App\Api\V1\Repositories\Eloquent\SysSettingsEloquentRepository;
@@ -36,6 +38,7 @@ use App\Contracts\Repository\IAdsCounterpartyConditionsRepository;
 use App\Contracts\Repository\IAdsPaymentMethodRepository;
 use App\Contracts\Repository\IAdsPaymentTimeLimitRepository;
 use App\Contracts\Repository\IAdsRepository;
+use App\Contracts\Repository\IAdsVisit;
 use App\Contracts\Repository\IEscrowReleaseRepository;
 use App\Contracts\Repository\IEscrowRepository;
 use App\Contracts\Repository\IOrderCancelledRepository;
@@ -43,6 +46,7 @@ use App\Contracts\Repository\IOrderChatRepository;
 use App\Contracts\Repository\IOrdersRepository;
 use App\Contracts\Repository\IPaymentMethodsRepository;
 use App\Contracts\Repository\ISysActivityTypesRepository;
+use App\Contracts\Repository\ISysBlockchainNetworks;
 use App\Contracts\Repository\ISysCurrencyRepository;
 use App\Contracts\Repository\ISysCurrencyTypesRepository;
 use App\Contracts\Repository\ISysSettingsRepository;
@@ -72,6 +76,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(IUserRepository::class, UserEloquentRepository::class);
         $this->app->bind(IUserPaymentAccountDetail::class, UserPaymentAccountDetailEloquentRepository::class);
         $this->app->bind(IAdsRepository::class, AdsEloquentRepository::class);
+        $this->app->bind(IAdsVisit::class, AdsVisitEloquentRepository::class);
         $this->app->bind(IAdsConditionElementsRepository::class, AdsConditionElementsEloquentRepository::class);
         $this->app->bind(IAdsConditionTypesRepository::class, AdsConditionTypesEloquentRepository::class);
         $this->app->bind(IAdsCounterpartyConditionsRepository::class, AdsCounterpartyConditionsEloquentRepository::class);
@@ -96,5 +101,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(IWalletP2PDebitLogRepository::class, WalletP2PDebitLogEloquentRepository::class);
         $this->app->bind(IWalletSpotRepository::class, WalletSpotEloquentRepository::class);
         $this->app->bind(IWalletTypesRepository::class, WalletTypesEloquentRepository::class);
+        $this->app->bind(ISysBlockchainNetworks::class, SysBlockchainNetworksEloquentRepository::class);
     }
 }

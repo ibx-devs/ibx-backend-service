@@ -83,6 +83,7 @@ $app->routeMiddleware([
 $app->register(Dingo\Api\Provider\LumenServiceProvider::class);
 $app->register(Laravel\Passport\PassportServiceProvider::class);
 $app->register(Dusterio\LumenPassport\PassportServiceProvider::class);
+$app->register(\Illuminate\Mail\MailServiceProvider::class);
 $app->register(App\Providers\AppServiceProvider::class);
 $app->register(App\Providers\RepositoryServiceProvider::class);
 $app->register(Orumad\ConfigCache\ServiceProviders\ConfigCacheServiceProvider::class);
@@ -106,6 +107,8 @@ $app->register(Ixudra\Curl\CurlServiceProvider::class);
 
 // Load config/auth.php
 $app->configure('auth');
+$app->configure('mail');
+$app->configure('services');
 
 $app->router->group([
     'namespace' => 'App\Api\V1\Controllers',

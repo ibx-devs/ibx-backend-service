@@ -5,6 +5,7 @@ namespace App\Api\V1\Repositories\Eloquent;
 use App\Api\V1\Models\Ads;
 use App\Api\V1\Repositories\EloquentRepository;
 use App\Contracts\Repository\IAdsRepository;
+use Illuminate\Support\Facades\DB;
 
 class AdsEloquentRepository extends  EloquentRepository implements IAdsRepository
 {
@@ -20,6 +21,30 @@ class AdsEloquentRepository extends  EloquentRepository implements IAdsRepositor
     {
         return Ads::class;
     }
+
+    public function getAdInfo($id)
+    {
+        $res = $this->ads->from('ads as a')
+            ->select('a.id', 'a.ad_type', 'a.operating_qty', 'a.user_id as creator', 'a.min_order', 'a.max_order', 'a.asset_id', 'asset.uuid as asset_uuid')
+            ->leftJoin('sys_currency as asset', 'a.asset_id', 'asset.id')
+            ->where("a.uuid", '=', $id)
+            ->lockForUpdate()
+            ->first();
+
+        return $res;
+    }
+
+    // public function getLockedAdInfo($id)
+    // {
+    //     $res = $this->ads->from('ads as a')
+    //         ->select('a.id', 'a.ad_type', 'a.qty', 'a.user_id as creator', 'a.min_order', 'a.max_order')
+    //         ->where("a.uuid", '=', $id)
+    //         ->lockForUpdate()
+    //         ->first();
+
+    //     return $res;
+    // }
+
 
     public function findAllDetailed()
     {
@@ -124,6 +149,7 @@ class AdsEloquentRepository extends  EloquentRepository implements IAdsRepositor
         $newEntity->ad_type = $detail['ad_type'];
         $newEntity->user_id = $detail['created_by'];
         $newEntity->qty = $detail['qty'];
+        $newEntity->operating_qty = $detail['qty'];
         $newEntity->price = $detail['price'];
         $newEntity->min_order = $detail['min_order'];
         $newEntity->max_order = $detail['max_order'];
@@ -135,5 +161,29 @@ class AdsEloquentRepository extends  EloquentRepository implements IAdsRepositor
         $newEntity->save();
 
         return $newEntity->id;
+    }
+
+    public function incrementVisit($adID)
+    {
+        return Ads::where('uuid', $adID)
+            ->update([
+                'click_count' => DB::raw('click_count + 1'),
+            ]);
+    }
+
+    public function debitAd($adID, $qty)
+    {
+        return Ads::where('uuid', $adID)
+            ->update([
+                'operating_qty' => DB::raw("operating_qty - {$qty}"),
+            ]);
+    }
+
+    public function creditAd($adID, $qty)
+    {
+        return Ads::where('uuid', $adID)
+            ->update([
+                'operating_qty' => DB::raw("operating_qty + {$qty}"),
+            ]);
     }
 }

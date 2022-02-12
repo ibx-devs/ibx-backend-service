@@ -13,4 +13,27 @@ class OrderCancelledEloquentRepository extends  EloquentRepository implements IO
     {
         return OrderCancelled::class;
     }
+
+
+
+    public $orders;
+    public function __construct(OrderCancelled $orders)
+    {
+        parent::__construct();
+        $this->orders =  $orders;
+    }
+
+
+
+    public function create($detail)
+    {
+        $newEntity = new OrderCancelled();
+        $newEntity->uuid = $detail['uuid'];
+        $newEntity->order_id = $detail['order_id'];
+        $newEntity->user_id = $detail['created_by'];
+        $newEntity->comment = $detail['comment'];
+        $newEntity->save();
+
+        return $newEntity->id;
+    }
 }
